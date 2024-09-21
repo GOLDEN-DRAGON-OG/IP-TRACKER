@@ -1,65 +1,62 @@
+
+#!/usr/bin/env python
+
 import requests
+import os
+
+def clear_screen():
+    os.system('clear')
 
 def print_banner():
-    banner = """
-┏━━┓┏━━━┓━━━━┏━━━━┓┏━━━┓┏━━━┓┏━━━┓┏┓┏━┓┏━━━┓┏━━━┓
-┗┫┣┛┃┏━┓┃━━━━┃┏┓┏┓┃┃┏━┓┃┃┏━┓┃┃┏━┓┃┃┃┃┏┛┃┏━━┛┃┏━┓┃
-━┃┃━┃┗━┛┃━━━━┗┛┃┃┗┛┃┗━┛┃┃┃━┃┃┃┃━┗┛┃┗┛┛━┃┗━━┓┃┗━┛┃
-━┃┃━┃┏━━┛━━━━━━┃┃━━┃┏┓┏┛┃┗━┛┃┃┃━┏┓┃┏┓┃━┃┏━━┛┃┏┓┏┛
-┏┫┣┓┃┃━━━━━━━━┏┛┗┓━┃┃┃┗┓┃┏━┓┃┃┗━┛┃┃┃┃┗┓┃┗━━┓┃┃┃┗┓
-┗━━┛┗┛━━━━━━━━┗━━┛━┗┛┗━┛┗┛━┗┛┗━━━┛┗┛┗━┛┗━━━┛┗┛┗━┛
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-[MADE BY GOLDEN DRAGON]
-    """
-    print(banner)
+    print("""
+██╗██████╗     ████████╗██████╗  █████╗  ██████╗██╗  ██╗███████╗██████╗ 
+██║██╔══██╗    ╚══██╔══╝██╔══██╗██╔══██╗██╔════╝██║ ██╔╝██╔════╝██╔══██╗
+██║██████╔╝       ██║   ██████╔╝███████║██║     █████╔╝ █████╗  ██████╔╝
+██║██╔═══╝        ██║   ██╔══██╗██╔══██║██║     ██╔═██╗ ██╔══╝  ██╔══██╗
+██║██║            ██║   ██║  ██║██║  ██║╚██████╗██║  ██╗███████╗██║  ██║
+╚═╝╚═╝            ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
 
-import requests
-from geopy.geocoders import Nominatim
 
-def get_location(ip):
-    url = f"https://ipapi.co/{ip}/json/"
+    IP Location Tracer by Golden Dragon
+    """)
+
+def get_location(ip_address):
+    url = f"https://ipapi.co/{ip_address}/json/"
     response = requests.get(url)
-    data = response.json()
-    return data.get('city'), data.get('region'), data.get('country_name')
 
-def get_lat_long(ip):
-    geolocator = Nominatim(user_agent="my_app")
-    location = geolocator.geocode(ip)
-    return location.latitude, location.longitude
+    if response.status_code == 200:
+        data = response.json()
+        if 'error' not in data:
+            country = data.get('country_name', 'Unknown')
+            region = data.get('region', 'Unknown')
+            city = data.get('city', 'Unknown')
+            latitude = data.get('latitude', 'Unknown')
+            longitude = data.get('longitude', 'Unknown')
 
-def check_own_ip():
-    url = "https://api.ipify.org"
-    response = requests.get(url)
-    ip = response.text
-    city, region, country = get_location(ip)
-    latitude, longitude = get_lat_long(ip)
-    print(f"Your IP: {ip}")
-    print(f"Location: {city}, {region}, {country}")
-    print(f"Latitude: {latitude}")
-    print(f"Longitude: {longitude}")
-
-def main():
-    while True:
-        print("Choose an option:")
-        print("1. Enter an IP address")
-        print("2. Check your own IP address")
-        print("3. Quit")
-        choice = input("Enter your choice (1, 2, or 3): ")
-        if choice == '1':
-            ip = input("Enter the IP address: ")
-            city, region, country = get_location(ip)
-            latitude, longitude = get_lat_long(ip)
-            print(f"IP: {ip}")
-            print(f"Location: {city}, {region}, {country}")
+            print(f"\nIP Address: {ip_address}")
+            print(f"Country: {country}")
+            print(f"Region: {region}")
+            print(f"City: {city}")
             print(f"Latitude: {latitude}")
             print(f"Longitude: {longitude}")
-        elif choice == '2':
-            check_own_ip()
-        elif choice == '3':
-            break
         else:
-            print("Invalid choice. Please try again.")
+            print(f"\nError: {data['error']}")
+    else:
+        print(f"\nError: Failed to retrieve location for IP {ip_address}")
+
+def main():
+    clear_screen()
+    print_banner()
+
+    while True:
+        ip_address = input("\nEnter an IP address (or 'q' to quit): ")
+
+        if ip_address.lower() == 'q':
+            break
+
+        clear_screen()
+        print_banner()
+        get_location(ip_address)
 
 if __name__ == '__main__':
     main()
