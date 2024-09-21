@@ -44,19 +44,47 @@ def get_location(ip_address):
     else:
         print(f"\nError: Failed to retrieve location for IP {ip_address}")
 
+def get_own_ip():
+    url = "https://api.ipify.org"
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        ip_address = response.text.strip()
+        return ip_address
+    else:
+        return None
+
 def main():
     clear_screen()
     print_banner()
 
     while True:
-        ip_address = input("\nEnter an IP address (or 'q' to quit): ")
+        print("\nSelect an option:")
+        print("1. Check own IP")
+        print("2. Enter IP address")
+        print("3. Quit")
 
-        if ip_address.lower() == 'q':
+        choice = input("Enter your choice (1-3): ")
+
+        if choice == '1':
+            clear_screen()
+            print_banner()
+            own_ip = get_own_ip()
+            if own_ip:
+                get_location(own_ip)
+            else:
+                print("\nError: Failed to retrieve own IP address.")
+        elif choice == '2':
+            clear_screen()
+            print_banner()
+            ip_address = input("\nEnter an IP address: ")
+            clear_screen()
+            print_banner()
+            get_location(ip_address)
+        elif choice == '3':
             break
-
-        clear_screen()
-        print_banner()
-        get_location(ip_address)
+        else:
+            print("\nInvalid choice. Please try again.")
 
 if __name__ == '__main__':
     main()
