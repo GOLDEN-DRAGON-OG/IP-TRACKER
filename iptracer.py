@@ -2,59 +2,64 @@ import requests
 
 def print_banner():
     banner = """
-░▀█▀░▒█▀▀█░░░▀▀█▀▀░▒█▀▀▄░█▀▀▄░▒█▀▀▄░▒█░▄▀░▒█▀▀▀░▒█▀▀▄░░░░░▒█▀▄▀█░█▀▀▄░▒█▀▀▄░▒█▀▀▀░░░▒█▀▀▄░▒█░░▒█░░░▒█▀▀█░▒█▀▀▀█░▒█░░░░▒█▀▀▄░▒█▀▀▀░▒█▄░▒█░░░▒█▀▀▄░▒█▀▀▄░█▀▀▄░▒█▀▀█░▒█▀▀▀█░▒█▄░▒█░░
-░▒█░░▒█▄▄█░░░░▒█░░░▒█▄▄▀▒█▄▄█░▒█░░░░▒█▀▄░░▒█▀▀▀░▒█▄▄▀░░░░░▒█▒█▒█▒█▄▄█░▒█░▒█░▒█▀▀▀░░░▒█▀▀▄░▒▀▄▄▄▀░░░▒█░▄▄░▒█░░▒█░▒█░░░░▒█░▒█░▒█▀▀▀░▒█▒█▒█░░░▒█░▒█░▒█▄▄▀▒█▄▄█░▒█░▄▄░▒█░░▒█░▒█▒█▒█░░
-░▄█▄░▒█░░░░░░░▒█░░░▒█░▒█▒█░▒█░▒█▄▄▀░▒█░▒█░▒█▄▄▄░▒█░▒█░░░░░▒█░░▒█▒█░▒█░▒█▄▄█░▒█▄▄▄░░░▒█▄▄█░░░▒█░░░░░▒█▄▄▀░▒█▄▄▄█░▒█▄▄█░▒█▄▄█░▒█▄▄▄░▒█░░▀█░░░▒█▄▄█░▒█░▒█▒█░▒█░▒█▄▄▀░▒█▄▄▄█░▒█░░▀█░░
-
+┏━━┓┏━━━┓━━━━┏━━━━┓┏━━━┓┏━━━┓┏━━━┓┏┓┏━┓┏━━━┓┏━━━┓
+┗┫┣┛┃┏━┓┃━━━━┃┏┓┏┓┃┃┏━┓┃┃┏━┓┃┃┏━┓┃┃┃┃┏┛┃┏━━┛┃┏━┓┃
+━┃┃━┃┗━┛┃━━━━┗┛┃┃┗┛┃┗━┛┃┃┃━┃┃┃┃━┗┛┃┗┛┛━┃┗━━┓┃┗━┛┃
+━┃┃━┃┏━━┛━━━━━━┃┃━━┃┏┓┏┛┃┗━┛┃┃┃━┏┓┃┏┓┃━┃┏━━┛┃┏┓┏┛
+┏┫┣┓┃┃━━━━━━━━┏┛┗┓━┃┃┃┗┓┃┏━┓┃┃┗━┛┃┃┃┃┗┓┃┗━━┓┃┃┃┗┓
+┗━━┛┗┛━━━━━━━━┗━━┛━┗┛┗━┛┗┛━┗┛┗━━━┛┗┛┗━┛┗━━━┛┗┛┗━┛
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[MADE BY GOLDEN DRAGON]
     """
     print(banner)
 
-def trace_ip(ip):
-    url = f"http://ip-api.com/json/{ip}"
+import requests
+from geopy.geocoders import Nominatim
+
+def get_location(ip):
+    url = f"https://ipapi.co/{ip}/json/"
     response = requests.get(url)
     data = response.json()
-    
-    if data['status'] == 'success':
-        country = data['country']
-        region = data['regionName']
-        city = data['city']
-        isp = data['isp']
-        latitude = data['lat']
-        longitude = data['lon']
-        
-        print(f"\033[33mIP: {ip}")
-        print(f"\033[32mCountry: {country}")
-        print(f"\033[34mRegion: {region}")
-        print(f"\033[35mCity: {city}")
-        print(f"\033[36mISP: {isp}")
-        print(f"\033[31mLatitude: {latitude}")
-        print(f"\033[37mLongitude: {longitude}\033[0m")
-    else:
-        print("\033[31mFailed to retrieve IP location information.\033[0m")
+    return data.get('city'), data.get('region'), data.get('country_name')
+
+def get_lat_long(ip):
+    geolocator = Nominatim(user_agent="my_app")
+    location = geolocator.geocode(ip)
+    return location.latitude, location.longitude
 
 def check_own_ip():
-    url = "http://ip-api.com/json"
+    url = "https://api.ipify.org"
     response = requests.get(url)
-    data = response.json()
-    
-    if data['status'] == 'success':
-        ip = data['query']
-        trace_ip(ip)
-    else:
-        print("\033[31mFailed to retrieve own IP address.\033[0m")
+    ip = response.text
+    city, region, country = get_location(ip)
+    latitude, longitude = get_lat_long(ip)
+    print(f"Your IP: {ip}")
+    print(f"Location: {city}, {region}, {country}")
+    print(f"Latitude: {latitude}")
+    print(f"Longitude: {longitude}")
 
-# Interactive usage
-print_banner()
+def main():
+    while True:
+        print("Choose an option:")
+        print("1. Enter an IP address")
+        print("2. Check your own IP address")
+        print("3. Quit")
+        choice = input("Enter your choice (1, 2, or 3): ")
+        if choice == '1':
+            ip = input("Enter the IP address: ")
+            city, region, country = get_location(ip)
+            latitude, longitude = get_lat_long(ip)
+            print(f"IP: {ip}")
+            print(f"Location: {city}, {region}, {country}")
+            print(f"Latitude: {latitude}")
+            print(f"Longitude: {longitude}")
+        elif choice == '2':
+            check_own_ip()
+        elif choice == '3':
+            break
+        else:
+            print("Invalid choice. Please try again.")
 
-while True:
-    choice = input("\033[33mEnter '1' to trace an IP address or '2' to check your own IP address (or 'q' to quit): \033[0m")
-    
-    if choice == '1':
-        ip_address = input("\033[32mEnter the IP address to trace: \033[0m")
-        trace_ip(ip_address)
-    elif choice == '2':
-        check_own_ip()
-    elif choice == 'q':
-        break
-    else:
-        print("\033[31mInvalid choice. Please enter '1', '2', or 'q'.\033[0m")
+if __name__ == '__main__':
+    main()
