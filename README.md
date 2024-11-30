@@ -10,8 +10,10 @@ ITS A BASIC IP INFORMATION GATHERING TOOL
 
 • python3 iptracer.py
 
-THANKS FOR COMING 💌 MORE PROJECTS SOON....
 
+PROOF OF CONCEPT 👇🏻
 
 
 ![image alt](https://i.imgur.com/A7BUunZ.jpeg)
+
+THANKS FOR VISITING. MORE PROJECTS SOON :) ....
